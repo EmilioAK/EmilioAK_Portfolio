@@ -6,11 +6,9 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@vscode/codicons/dist/codicon.css">
   <style>
-
+  /* TODO: Move areas to css file */
     .sidebar-header {
       grid-area: sidebar-header;
-      background-color: lightcoral;
-      padding: 5px;
     }
     .tab-bar {
       grid-area: tab-bar;
@@ -19,8 +17,6 @@
     }
     .sidebar-body {
       grid-area: sidebar-body;
-      background-color: lightgreen;
-      padding: 5px;
     }
     .editor-area {
       grid-area: editor-area;
@@ -43,7 +39,12 @@
     <i class="codicon codicon-extensions"></i>
   </div>
   <div class="tab-bar">Tab Bar</div>
-  <div class="sidebar-body">Sidebar Body</div>
+  <div class="sidebar-body">
+    <div class="sidebar-body-header">
+      <i class="codicon codicon-chevron-down" style="font-size: 10px;"></i> EMILIOAK_PORTFOLIO
+    </div>
+    <div class="sidebar-body-files"></div>
+  </div>
   <div class="editor-area">Editor Area</div>
   <div class="footer">Footer</div>
 </body>

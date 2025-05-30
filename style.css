@@ -9,6 +9,7 @@ body {
         "footer footer";
     grid-template-rows: 35px 1fr 25px;
     grid-template-columns: 275px 1fr;
+    background-color: #141414;
 }
 
 
@@ -17,4 +18,12 @@ body {
     align-items: center;
     justify-content: center;
     gap: 15px;
+    color: #828282;
+}
+
+.sidebar-body-header {
+    font-family: sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: #505050
 }
