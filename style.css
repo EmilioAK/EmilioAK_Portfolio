@@ -1,0 +1,14 @@
+body {
+    margin: 0;
+    height: 100vh;
+    display: grid;
+    box-sizing: border-box;
+    grid-template-areas:
+        "sidebar-header tab-bar"
+        "sidebar-body editor-area"
+        "footer footer";
+    grid-template-rows: 35px 1fr 25px;
+    grid-template-columns: 275px 1fr;
+}
+
+
