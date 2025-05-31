@@ -5,31 +5,6 @@
   <title>EmilioAK</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@vscode/codicons/dist/codicon.css">
-  <style>
-  /* TODO: Move areas to css file */
-    .sidebar-header {
-      grid-area: sidebar-header;
-    }
-    .tab-bar {
-      grid-area: tab-bar;
-      background-color: lightblue;
-      padding: 5px;
-    }
-    .sidebar-body {
-      grid-area: sidebar-body;
-    }
-    .editor-area {
-      grid-area: editor-area;
-      background-color: lightyellow;
-      padding: 5px;
-    }
-    .footer {
-      grid-area: footer;
-      background-color: lightgray;
-      padding: 5px;
-      text-align: center;
-    }
-  </style>
 </head>
 <body>
   <div class="sidebar-header">
@@ -38,14 +13,24 @@
     <i class="codicon codicon-source-control"></i>
     <i class="codicon codicon-extensions"></i>
   </div>
-  <div class="tab-bar">Tab Bar</div>
+  <div class="tab-bar">
+    <div class="tab selected">
+      <i class="codicon codicon-markdown"></i> emilio.md <i class="codicon codicon-close"></i>
+    </div>
+    <div class="tab">
+      <i class="codicon codicon-markdown"></i> emilio.md <i class="codicon codicon-close"></i>
+    </div>
+    <div class="tab">
+      <i class="codicon codicon-markdown"></i> emilio.md <i class="codicon codicon-close"></i>
+    </div>
+  </div>
   <div class="sidebar-body">
     <div class="sidebar-body-header">
       <i class="codicon codicon-chevron-down" style="font-size: 10px;"></i> EMILIOAK_PORTFOLIO
     </div>
     <div class="sidebar-body-files"></div>
   </div>
-  <div class="editor-area">Editor Area</div>
-  <div class="footer">Footer</div>
+  <div class="editor-area"></div>
+  <div class="footer"></div>
 </body>
 </html>
