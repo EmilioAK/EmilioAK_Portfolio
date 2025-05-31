@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>EmilioAK</title>
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@vscode/codicons/dist/codicon.css">
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@vscode/codicons/dist/codicon.css" />
 </head>
 <body>
   <div class="sidebar-header">
@@ -13,44 +13,37 @@
     <i class="codicon codicon-source-control"></i>
     <i class="codicon codicon-extensions"></i>
   </div>
+
   <div class="tab-bar">
     <div class="tab selected">
       <i class="codicon codicon-markdown"></i> emilio.md <i class="codicon codicon-close"></i>
     </div>
-    <div class="tab">
-      <i class="codicon codicon-markdown"></i> emilio.md <i class="codicon codicon-close"></i>
-    </div>
-    <div class="tab">
-      <i class="codicon codicon-markdown"></i> emilio.md <i class="codicon codicon-close"></i>
-    </div>
   </div>
+
   <div class="sidebar-body">
     <div class="sidebar-body-header">
       <i class="codicon codicon-chevron-down" style="font-size: 10px;"></i> EMILIOAK_PORTFOLIO
     </div>
-    <div class="sidebar-body-files">
-      <div class="sidebar-file selected">
-        <i class="codicon codicon-markdown"></i> emilio.md
-      </div>
-      <div class="sidebar-file">
-        <i class="codicon codicon-markdown"></i> emilio.md
-      </div>
-      <div class="sidebar-file">
-        <i class="codicon codicon-markdown"></i> emilio.md
-      </div>
+    <div class="sidebar-body-files" id="sidebar-body-files">
     </div>
   </div>
+
   <div class="editor-area"></div>
   <div class="footer"></div>
+
+  <template id="sidebar-file">
+    <div class="sidebar-file">
+      <img class="icon" /> <span class="sidebar-file-name"></span>
+    </div>
+  </template>
+
   <script src="file_manager.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.33.0/min/vs/loader.min.js"></script>
   <script>
-    require.config({ 
-      paths: { 
-        vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.33.0/min/vs' 
-      } 
+    require.config({
+      paths: { vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.33.0/min/vs' }
     });
-    require(['vs/editor/editor.main'], function() {
+    require(['vs/editor/editor.main'], function () {
       window.editor = monaco.editor.create(
         document.querySelector('.editor-area'),
         {
@@ -60,12 +53,110 @@
           automaticLayout: true
         }
       );
-
-      fileManager.switchToFile('emilio.md')
-        .catch(err => {
-          console.error('Couldn’t load emilio.md:', err);
-        });
     });
+
+    function addFiletypeIcon(imgElem, ext) {
+      const iconMap = {
+        md: 'file_type_markdown.svg',
+        html: 'file_type_html.svg',
+        css: 'file_type_css.svg',
+        js: 'file_type_js.svg'
+      };
+      if (iconMap[ext]) {
+        imgElem.src = `https://cdn.jsdelivr.net/gh/vscode-icons/vscode-icons/icons/${iconMap[ext]}`;
+        imgElem.alt = `${ext} icon`;
+      } else {
+        imgElem.alt = '';
+      }
+    }
+
+    function getLanguageFromExtension(ext) {
+      switch (ext) {
+        case 'js':    return 'javascript';
+        case 'html':  return 'html';
+        case 'css':   return 'css';
+        case 'md':    return 'markdown';
+        default:      return 'plaintext';
+      }
+    }
+
+    async function loadAllFiles() {
+      const USERNAME = 'EmilioAK';
+      const REPONAME = 'EmilioAK_Portfolio';
+      const DIR_API = `https://api.github.com/repos/${USERNAME}/${REPONAME}/contents/`;
+
+      const res = await fetch(DIR_API);
+      if (!res.ok) throw new Error(`GitHub API error: ${res.status}`);
+      const items = await res.json();
+
+      const files = items.filter(item => item.type === 'file');
+      const fileCache = {};
+      await Promise.all(
+        files.map(async (item) => {
+          const fileRes = await fetch(item.url);
+          if (!fileRes.ok) throw new Error(`Failed to fetch ${item.name}: ${fileRes.status}`);
+          const json = await fileRes.json();
+          const content = atob(json.content.replace(/\n/g, ''));
+          const ext = item.name.split('.').pop().toLowerCase();
+          const language = getLanguageFromExtension(ext);
+          fileCache[item.name] = { content, ext, language };
+        })
+      );
+
+      return fileCache;
+    }
+
+    function createSidebar(fileCache) {
+      const sidebarContainer = document.getElementById('sidebar-body-files');
+      const template = document.getElementById('sidebar-file');
+      const fileNames = Object.keys(fileCache);
+
+      const defaultFileName = 'emilio.md';
+      let defaultIndex = fileNames.indexOf(defaultFileName);
+      if (defaultIndex < 0) defaultIndex = 0;
+
+      fileNames.forEach((fileName, idx) => {
+        const { ext, language, content } = fileCache[fileName];
+
+        const clone = template.content.cloneNode(true);
+        const entry = clone.querySelector('.sidebar-file');
+        const img = clone.querySelector('.icon');
+        const span = clone.querySelector('.sidebar-file-name');
+
+        entry.id = `sidebar-file-${fileName}`;
+        span.textContent = fileName;
+        addFiletypeIcon(img, ext);
+
+        entry.addEventListener('click', () => {
+          const model = monaco.editor.createModel(content, language);
+          window.editor.setModel(model);
+
+          document.querySelectorAll('.sidebar-file.selected').forEach(el => el.classList.remove('selected'));
+          entry.classList.add('selected');
+        });
+
+        if (idx === defaultIndex) {
+          entry.classList.add('selected');
+          const model = monaco.editor.createModel(content, language);
+          window.editor.setModel(model);
+        }
+
+        sidebarContainer.appendChild(clone);
+      });
+    }
+
+    async function init() {
+      let fileCache;
+      try {
+        fileCache = await loadAllFiles();
+      } catch (err) {
+        console.error(err);
+        return;
+      }
+      createSidebar(fileCache);
+    }
+
+    init();
   </script>
 </body>
 </html>

@@ -106,7 +106,6 @@ body {
 .sidebar-file.selected {
     background-color: #2E2E2E;
     color: white;
-    border: 1px solid #30373A;
 }
 
 .editor-area {
@@ -126,6 +125,7 @@ body {
     border-top: 1px solid var(--border-color);
 }
 
-.codicon-markdown {
-    color: #519ABA;
+.icon {
+    width: 16px;
+    height: 16px;
 }
