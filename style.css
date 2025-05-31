@@ -111,11 +111,15 @@ body {
 
 .editor-area {
     grid-area: editor-area;
+    position: relative;    /* Let Monaco fill it */
+    width: 100%;
+    height: 100%;
     background-color: var(--accent-color);
     border: 1px solid var(--border-color);
     border-top: none;
     color: #D7DDE8;
-}
+    overflow: hidden;      /* Monaco will handle its own scrolling */
+  }
 
 .footer {
     grid-area: footer;

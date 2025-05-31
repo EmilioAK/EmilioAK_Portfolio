@@ -42,5 +42,30 @@
   </div>
   <div class="editor-area"></div>
   <div class="footer"></div>
+  <script src="file_manager.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.33.0/min/vs/loader.min.js"></script>
+  <script>
+    require.config({ 
+      paths: { 
+        vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.33.0/min/vs' 
+      } 
+    });
+    require(['vs/editor/editor.main'], function() {
+      window.editor = monaco.editor.create(
+        document.querySelector('.editor-area'),
+        {
+          model: monaco.editor.createModel('', 'plaintext', monaco.Uri.parse('file:///blank')),
+          theme: 'vs-dark',
+          lineNumbers: 'on',
+          automaticLayout: true
+        }
+      );
+
+      fileManager.switchToFile('emilio.md')
+        .catch(err => {
+          console.error('Couldn’t load emilio.md:', err);
+        });
+    });
+  </script>
 </body>
 </html>
