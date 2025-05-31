@@ -1,11 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <title>EmilioAK</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@vscode/codicons/dist/codicon.css" />
+  <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="img/android-chrome-192x192.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="img/android-chrome-512x512.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="img/apple-touch-icon.png" />
 </head>
+
 <body>
   <div class="sidebar-header">
     <i class="codicon codicon-files selected"></i>
@@ -57,7 +64,7 @@
         }
       );
     });
-  
+
     function addFiletypeIcon(imgElem, ext) {
       const iconMap = {
         md: 'file_type_markdown.svg',
@@ -72,29 +79,29 @@
         imgElem.alt = '';
       }
     }
-  
+
     function getLanguageFromExtension(ext) {
       switch (ext) {
-        case 'js':    return 'javascript';
-        case 'html':  return 'html';
-        case 'css':   return 'css';
-        case 'md':    return 'markdown';
-        default:      return 'plaintext';
+        case 'js': return 'javascript';
+        case 'html': return 'html';
+        case 'css': return 'css';
+        case 'md': return 'markdown';
+        default: return 'plaintext';
       }
     }
-  
+
     async function loadAllFiles() {
       const USERNAME = 'EmilioAK';
       const REPONAME = 'EmilioAK_Portfolio';
       const DIR_API = `https://api.github.com/repos/${USERNAME}/${REPONAME}/contents/`;
-  
+
       const res = await fetch(DIR_API);
       if (!res.ok) throw new Error(`GitHub API error: ${res.status}`);
       const items = await res.json();
-  
+
       const files = items.filter(item => item.type === 'file');
       const fileCache = {};
-  
+
       await Promise.all(
         files.map(async (item) => {
           const fileRes = await fetch(item.url);
@@ -106,25 +113,25 @@
           fileCache[item.name] = { content, ext, language };
         })
       );
-  
+
       return fileCache;
     }
-  
+
     function createSidebar(fileCache) {
       const sidebarContainer = document.getElementById('sidebar-body-files');
       const sidebarTemplate = document.getElementById('sidebar-file');
       const tabTemplate = document.getElementById('tab-template');
       const tabBar = document.querySelector('.tab-bar');
-  
+
       let currentFile = null;
-  
+
       function deselectAllSidebar() {
         document.querySelectorAll('.sidebar-file.selected').forEach(el => el.classList.remove('selected'));
       }
       function deselectAllTabs() {
         document.querySelectorAll('.tab-bar .tab.selected').forEach(el => el.classList.remove('selected'));
       }
-  
+
       function loadFileIntoEditor(fileName) {
         if (currentFile === fileName) return;
         const { content, language } = fileCache[fileName];
@@ -132,16 +139,16 @@
         window.editor.setModel(model);
         currentFile = fileName;
       }
-  
+
       function onSidebarClick(e) {
         const entry = e.currentTarget;
         const fileName = entry.dataset.filename;
-  
+
         deselectAllSidebar();
         entry.classList.add('selected');
-  
+
         loadFileIntoEditor(fileName);
-  
+
         const tabId = `tab-${fileName}`;
         let tabEl = document.getElementById(tabId);
         if (!tabEl) {
@@ -149,19 +156,19 @@
           tabEl = clone.querySelector('.tab');
           tabEl.id = tabId;
           tabEl.dataset.filename = fileName;
-  
+
           const iconEl = tabEl.querySelector('.icon');
           const textSpan = tabEl.querySelector('.tab-file-name');
           addFiletypeIcon(iconEl, fileCache[fileName].ext);
           textSpan.textContent = fileName;
-  
+
           // Close‐button logic:
           const closeIcon = tabEl.querySelector('.codicon-close');
           closeIcon.addEventListener('click', (ev) => {
             ev.stopPropagation(); // don’t trigger the tab click handler
             const wasSelected = tabEl.classList.contains('selected');
             tabEl.remove();
-  
+
             if (wasSelected) {
               deselectAllTabs();
               deselectAllSidebar();
@@ -178,55 +185,55 @@
               }
             }
           });
-  
+
           tabEl.addEventListener('click', () => {
             deselectAllTabs();
             tabEl.classList.add('selected');
-  
+
             deselectAllSidebar();
             const matchingSidebar = document.querySelector(`.sidebar-file[data-filename="${fileName}"]`);
             if (matchingSidebar) matchingSidebar.classList.add('selected');
-  
+
             loadFileIntoEditor(fileName);
           });
-  
+
           tabBar.appendChild(clone);
           tabEl = document.getElementById(tabId);
         }
-  
+
         deselectAllTabs();
         tabEl.classList.add('selected');
       }
-  
+
       const fileNames = Object.keys(fileCache);
       const defaultFileName = 'emilio.md';
       let defaultIndex = fileNames.indexOf(defaultFileName);
       if (defaultIndex < 0) defaultIndex = 0;
-  
+
       fileNames.forEach((fileName, idx) => {
         const { ext } = fileCache[fileName];
         const clone = sidebarTemplate.content.cloneNode(true);
         const entry = clone.querySelector('.sidebar-file');
         const img = clone.querySelector('.icon');
         const span = clone.querySelector('.sidebar-file-name');
-  
+
         entry.id = `sidebar-file-${fileName}`;
         entry.dataset.filename = fileName;
         span.textContent = fileName;
         addFiletypeIcon(img, ext);
-  
+
         entry.addEventListener('click', onSidebarClick);
-  
+
         if (idx === defaultIndex) {
           entry.classList.add('selected');
           loadFileIntoEditor(fileName);
           onSidebarClick({ currentTarget: entry });
         }
-  
+
         sidebarContainer.appendChild(clone);
       });
     }
-  
+
     async function init() {
       let fileCache;
       try {
@@ -237,9 +244,10 @@
       }
       createSidebar(fileCache);
     }
-  
+
     init();
   </script>
-  
+
 </body>
+
 </html>
