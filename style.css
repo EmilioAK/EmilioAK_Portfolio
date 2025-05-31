@@ -72,11 +72,41 @@ body {
 
 .sidebar-body {
     grid-area: sidebar-body;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
 
 .sidebar-body-header {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
+}
+
+.sidebar-body-files {
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-file {
+    display: flex;
+    width: 100%;
+    height: 20px;
+    padding-left: 12px;
+    font-size: 13px;
+    gap: 5px;
+    align-items: center;
+    cursor: pointer;
+}
+
+.sidebar-file:hover {
+    background-color: #212121;
+    color: white;
+}
+
+.sidebar-file.selected {
+    background-color: #2E2E2E;
+    color: white;
+    border: 1px solid #30373A;
 }
 
 .editor-area {
